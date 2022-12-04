@@ -5,7 +5,8 @@
 
 class MatrixGraph : public Graph{
 private:
-	int** m_Mat;
+	// int** ([from vertext][to vertex] = weight)
+	int** m_Mat; // 그래프 데이터
 
 public:
 	MatrixGraph(bool type, int size);

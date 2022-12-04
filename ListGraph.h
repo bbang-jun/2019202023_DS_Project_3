@@ -5,7 +5,8 @@
 
 class ListGraph : public Graph{
 private:
-	map < int, int >* m_List;
+	// map<int, int>* (map[from vertex].insert([to vertex], [weight]))
+	map < int, int >* m_List; // 그래프 데이터
 
 public:	
 	ListGraph(bool type, int size);

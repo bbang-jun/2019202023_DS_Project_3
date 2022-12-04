@@ -19,10 +19,10 @@ public:
 	bool PRINT();
 	
 	bool mBFS(int vertex);
-	bool mDFS_R(int vertex);
 	bool mDFS(int vertex);
-	bool mDIJKSTRA(int vertex);
+	bool mDFS_R(int vertex);
 	bool mKRUSKAL();
+	bool mDIJKSTRA(int vertex);
 	bool mBELLMANFORD(int s_vertex, int e_vertex);
 	bool mFLOYD();
 

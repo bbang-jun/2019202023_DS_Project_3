@@ -17,21 +17,65 @@ Manager::~Manager()
 void Manager::run(const char* command_txt){
 	ifstream fin;
 	fin.open(command_txt);
-		
-	if(!fin)
+	string commandFromtxt; // for getline and save command
+	char ptr[100]; // commandFromtxt(string to char*)
+	char *command; // strtok for ptr
+	char* str=NULL; // first argument
+	char* str2=NULL; // second argument
+
+	if(!fin) // print error code for command_txt
 	{
 		fout<<"[ERROR] command file open error!"<<endl;
 		return;
 	}
-	
-	char* str=NULL;
-	char* str2=NULL;
-	char buf[129]={0};
+	while(!fin.eof()){
+		getline(fin, commandFromtxt, '\n'); // get the line of command.txt file
+		if(commandFromtxt.empty()==true) // if command line is empty
+			break;
+		
+		strcpy(ptr, commandFromtxt.c_str());
+		command = strtok(ptr, "\t");
+		commandFromtxt=command;
 
-	while(fin.getline(buf, 128))
-	{
+		if(commandFromtxt=="LOAD"){
+			char* textfile;
+			textfile=strtok(NULL, "\t");
+			LOAD(textfile);
+		}
+		else if(commandFromtxt=="PRINT"){
+			//PRINT();
+		}
+		else if(commandFromtxt=="BFS"){
+			//mBFS();
+		}
+		else if(commandFromtxt=="DFS"){
+			//mDFS();
+		}
+		else if(commandFromtxt=="DFS_R"){
+			//mDFS_R();
+		}
+		else if(commandFromtxt=="KRUSKAL"){
+			//mDIJKSTRA();
+		}
+		else if(commandFromtxt=="DIKSTRA"){
+			//mDIJKSTRA();
+		}
+		else if(commandFromtxt=="BELLMANDFORD"){
+			//mBELLMANFORD();
+		}
+		else if(commandFromtxt=="FLOYD"){
+			//mFLOYD();
+		}
+		else if(commandFromtxt=="EXIT"){
+			
+		}
+	}
+	// char buf[129]={0};
 
-	}	
+	// while(fin.getline(buf, 128))
+	// {
+
+	// }	
 	fin.close();
 }
 

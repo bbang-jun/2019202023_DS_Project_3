@@ -20,8 +20,8 @@ using namespace std;
 
 class Graph{
 protected:
-	bool m_Type;//0:List 1:Matrix
-	int m_Size;
+	bool m_Type;//0:List 1:Matrix // 그래프 형식(List일 경우 0, Matrix일 경우 1)
+	int m_Size; // 그래프 크기
 
 public:
 	Graph(bool type, int size);
