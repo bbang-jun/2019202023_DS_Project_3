@@ -51,7 +51,7 @@ void ListGraph::insertEdge(int from, int to, int weight)
 bool ListGraph::printGraph()
 {
 	fout.open("log.txt", ios::app);
-	fout<<"Graph is ListGraph!"<<endl;
+	fout<<"========PRINT========"<<endl;
 
 	for(int i=0; i<m_Size; i++)
 	{
@@ -63,6 +63,7 @@ bool ListGraph::printGraph()
 		}
 		fout<<endl;
 	}
-	fout<<endl;
+	//fout<<endl;
+	fout<<"====================="<<endl<<endl;
 	return 1;
 }

@@ -42,7 +42,10 @@ void Manager::run(const char* command_txt){
 		if(commandFromtxt=="LOAD"){
 			char* textfile;
 			textfile=strtok(NULL, "\n");
+			if(textfile==NULL)
+				printErrorCode(100);
 			LOAD(textfile);
+			printSuccessCode("LOAD");
 		}
 		else if(commandFromtxt=="PRINT"){
 			PRINT();
@@ -50,17 +53,26 @@ void Manager::run(const char* command_txt){
 		else if(commandFromtxt=="BFS"){
 			char*vertex;
 			vertex=strtok(NULL, "\n");
+			if(vertex==NULL)
+				printErrorCode(300);
+				
 			int start=atoi(vertex);
+			fout<<"======== BFS ========"<<endl;
+			fout<<"startvertex: "<<start<<endl;
 			mBFS(start);
+			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="DFS"){
 			char*vertex;
 			vertex=strtok(NULL, "\n");
+			if(vertex==NULL)
+				printErrorCode(400);
+
 			int start=atoi(vertex);
 			fout<<"======== DFS ========"<<endl;
 			fout<<"startvertex: "<<start<<endl;
 			mDFS(start);
-			fout<<"====================="<<endl;
+			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="DFS_R"){
 			//mDFS_R();
@@ -203,22 +215,63 @@ bool Manager::PRINT()
 
 bool Manager::mBFS(int vertex)
 {
-	if(graph->getType()==0){ // if graph format is List
-		
-	}
-	else if(graph->getType()==1){ // if graph format is Matrix
+	bool visited[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
+	for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
+		visited[i]=false;
+	visited[vertex]=true;
 
+	queue<int> q;
+	q.push(vertex);
+	
+	if(undigraph->getSize()==1) // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
+		fout<<vertex;
+	else // 처음 노드 출력
+		fout<<vertex<<" -> ";
+
+	while(!q.empty()){
+		vertex=q.front();
+		q.pop();
+
+		map<int, int>*m = new map<int, int>; // map 동적 할당
+		undigraph->getAdjacentEdges(vertex, m); // 해당 vertex에 인접한 vertex들을 map에 담음
+
+		map<int, int>::iterator iter; 
+		for(iter=m->begin(); iter!=m->end(); iter++){
+			int next=iter->first;
+
+			if(!visited[next]){
+				visited[next]=true;
+
+				int k=0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
+				for(int j=0; j<undigraph->getSize(); j++){ // 해당 그래프에서 방문한 횟수 판단
+					if(visited[j]==true)
+						k++;
+				}
+
+				if(k==undigraph->getSize()) // 해당 그래프에서 모든 vertex를 방문했으면
+					fout<<next; // "->" 없이 출력
+				else // 아직 모든 vertex를 방문하지 않았으면
+					fout<<next<<" -> "; // "->" 있도록 출력
+
+				q.push(next);
+				
+			}
+		}
 	}
+
+	fout<<endl;
 }
 
 bool Manager::mDFS(int vertex) // dfs
 {
-	bool check[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
+	bool visited[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
 	for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
-		check[i]=false;
-	
+		visited[i]=false;
+	visited[vertex]=true; // 방문했으므로 true
+
+	stack<int> s;
 	s.push(vertex); // stack에 push(시작 vertex)
-	check[vertex]=true; // 방문했으므로 true
+	
 	if(undigraph->getSize()==1) // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
 		fout<<vertex;
 	else // 처음 노드 출력
@@ -235,12 +288,12 @@ bool Manager::mDFS(int vertex) // dfs
 		for(iter=m->begin(); iter!=m->end(); iter++){ // 해당 vertex에 인접한 모든 vertex(map) - map은 오름차순 자동 정렬
 			int next=iter->first; // 다음 vetex(현재 vertex와 인접한 vertex)
 
-			if(!check[next]){ // false인 경우, 즉 다음 vertex가 방문하지 않았다면
-				check[next]=true; // 방문할 것이므로 true
+			if(!visited[next]){ // false인 경우, 즉 다음 vertex가 방문하지 않았다면
+				visited[next]=true; // 방문할 것이므로 true
 
 				int k=0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
 				for(int j=0; j<undigraph->getSize(); j++){ // 해당 그래프에서 방문한 횟수 판단
-					if(check[j]==true)
+					if(visited[j]==true)
 						k++;
 				}
 
@@ -288,12 +341,12 @@ bool Manager::mFLOYD()
 void Manager::printSuccessCode(string command) {// SUCCESS CODE PRINT 
 	fout<<"======== "<<command<<" ========"<<endl;
 	fout << "Success" << endl;
-	fout << "=======================" << endl;
+	fout << "=======================" << endl<<endl;
 }
 
 void Manager::printErrorCode(int n)
 {
 	fout<<"======== ERROR ========"<<endl;
 	fout<<n<<endl;
-	fout<<"======================="<<endl; 
+	fout<<"======================="<<endl<<endl; 
 }

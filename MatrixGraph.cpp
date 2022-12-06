@@ -44,7 +44,7 @@ bool MatrixGraph::printGraph()
 	if( m_Size < 0 )
 		return 0;
 
-	fout<<"Graph is MatrixGraph!"<<endl;
+	fout<<"========PRINT========"<<endl;
 
 	fout<<'\t';
 	for(int i=0; i<m_Size; i++)
@@ -62,6 +62,7 @@ bool MatrixGraph::printGraph()
 		}
 		fout<<endl;
 	}
+	fout<<"====================="<<endl<<endl;
 	return 1;
 }
 

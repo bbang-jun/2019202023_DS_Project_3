@@ -8,7 +8,6 @@ private:
 	Graph* graph;
 	ofstream fout;
 	int load;
-	stack<int> s;
 	Graph* undigraph;
 
 public:
