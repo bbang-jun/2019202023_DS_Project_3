@@ -75,7 +75,22 @@ void Manager::run(const char* command_txt){
 			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="DFS_R"){
-			//mDFS_R();
+			char*vertex;
+			vertex=strtok(NULL, "\n");
+			if(vertex==NULL)
+				printErrorCode(400);
+
+			bool visited[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
+			for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
+				visited[i]=false;
+
+			int start=atoi(vertex);
+			fout<<"======== DFS ========"<<endl;
+			fout<<"startvertex: "<<start<<endl;
+
+			mDFS_R(start, visited);
+			fout<<endl;
+			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="KRUSKAL"){
 			//mDIJKSTRA();
@@ -313,9 +328,38 @@ bool Manager::mDFS(int vertex) // dfs
 }
 
 
-bool Manager::mDFS_R(int vertex)
+bool Manager::mDFS_R(int vertex, bool visited[])
 {
+	visited[vertex]=true; // 방문했으므로 true
 
+	if(undigraph->getSize()==1) // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
+		fout<<vertex;
+	else{
+		int k=0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
+		for(int j=0; j<undigraph->getSize(); j++){ // 해당 그래프에서 방문한 횟수 판단
+			if(visited[j]==true)
+				k++;
+		}
+		if(k==undigraph->getSize()) // 해당 그래프에서 모든 vertex를 방문했으면
+			fout<<vertex; // "->" 없이 출력
+		else // 아직 모든 vertex를 방문하지 않았으면
+			fout<<vertex<<" -> "; // "->" 있도록 출력
+	}
+		
+
+	map<int, int>*m = new map<int, int>; // map 동적 할당
+	undigraph->getAdjacentEdges(vertex, m); // 해당 vertex에 인접한 vertex들을 map에 담음
+
+	map<int, int>::iterator iter; 
+	for(iter=m->begin(); iter!=m->end(); iter++){
+		int next=iter->first; // 다음 vetex(현재 vertex와 인접한 vertex)
+
+		if(!visited[next]){
+			mDFS_R(next, visited);
+		}
+	}
+
+	delete m;
 }
 
 bool Manager::mDIJKSTRA(int vertex)
