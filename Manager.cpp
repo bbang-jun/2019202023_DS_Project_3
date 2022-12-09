@@ -85,7 +85,7 @@ void Manager::run(const char* command_txt){
 				visited[i]=false;
 
 			int start=atoi(vertex);
-			fout<<"======== DFS ========"<<endl;
+			fout<<"======== DFS_R ========"<<endl;
 			fout<<"startvertex: "<<start<<endl;
 
 			mDFS_R(start, visited);
@@ -126,8 +126,6 @@ bool Manager::LOAD(char* filename)
 	int from=0, to=0, weight=0;
 	string strFileName=filename;
 
-	bool judge=true;
-
 	if(strFileName=="graph_L.txt"){
 		ifstream graphLtxt;
 		graphLtxt.open("graph_L.txt", ios::app);
@@ -141,30 +139,22 @@ bool Manager::LOAD(char* filename)
 			getline(graphLtxt, strGraphSize, '\n');
 			graphSize=stoi(strGraphSize);
 			graph=new ListGraph(0, graphSize); // 다형성?
-			undigraph=new ListGraph(0, graphSize); // 0은 list graph를 의미
+			undigraph=new MatrixGraph(0, graphSize); // 0은 list graph를 의미
 
 			while(!graphLtxt.eof()){
 				getline(graphLtxt, forGetLine, '\n'); // 0
 				char temp[200];
 				strcpy(temp, forGetLine.c_str());
-
+				to=0;
+				weight=0;
 				ptr1=strtok(temp, " ");
 				ptr2=strtok(NULL, "\n"); // "\n" 아니면 " "
 
 				if(ptr2==NULL){ // 2번째 인자가 없는 경우
 					from=atoi(ptr1); // from 생성
-					if(judge==false){
-						// edge가 없는 그래프 구현 해야 함
-						to=-1;
-						weight=-1;
-						graph->insertEdge(from, to, weight);  // 여기서부터 3개 아래는 사실상 지금 의미 x
-						undigraph->insertEdge(from, to, weight);
-						undigraph->insertEdge(to, from, weight);
-					}
-					
-					judge=false;
+					graph->insertEdge(from, to, weight);
 				}
-				else{ // 2번째 인자가 있으면 to, weight임
+				else{ // 2번째 인자가 있으면 to, weightrjk
 					to=atoi(ptr1);
 					weight=atoi(ptr2);
 					graph->insertEdge(from, to, weight);
@@ -172,7 +162,6 @@ bool Manager::LOAD(char* filename)
 					undigraph->insertEdge(to, from, weight);
 					ptr1=NULL;
 					ptr2=NULL;
-					judge=true;
 				}
 			}
 		}
@@ -230,6 +219,9 @@ bool Manager::PRINT()
 
 bool Manager::mBFS(int vertex)
 {
+	if(vertex>undigraph->getSize()) // 그래프에 있는 노드보다 큰 노드가 들어오면 없으므로 예외처리
+		return true;
+
 	bool visited[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
 	for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
 		visited[i]=false;
@@ -238,10 +230,12 @@ bool Manager::mBFS(int vertex)
 	queue<int> q;
 	q.push(vertex);
 	
-	if(undigraph->getSize()==1) // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
-		fout<<vertex;
+	if(undigraph->getSize()==1){ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
+		fout<<vertex<<endl;
+		return true;
+	} 
 	else // 처음 노드 출력
-		fout<<vertex<<" -> ";
+		fout<<vertex;
 
 	while(!q.empty()){
 		vertex=q.front();
@@ -251,6 +245,7 @@ bool Manager::mBFS(int vertex)
 		undigraph->getAdjacentEdges(vertex, m); // 해당 vertex에 인접한 vertex들을 map에 담음
 
 		map<int, int>::iterator iter; 
+
 		for(iter=m->begin(); iter!=m->end(); iter++){
 			int next=iter->first;
 
@@ -263,15 +258,17 @@ bool Manager::mBFS(int vertex)
 						k++;
 				}
 
-				if(k==undigraph->getSize()) // 해당 그래프에서 모든 vertex를 방문했으면
+				if(k==undigraph->getSize()){ // 해당 그래프에서 모든 vertex를 방문했으면
 					fout<<next; // "->" 없이 출력
-				else // 아직 모든 vertex를 방문하지 않았으면
-					fout<<next<<" -> "; // "->" 있도록 출력
+					return true;
+				} 
+					
 
 				q.push(next);
-				
+				fout<<" -> "<<next;
 			}
 		}
+		
 	}
 
 	fout<<endl;
@@ -279,6 +276,9 @@ bool Manager::mBFS(int vertex)
 
 bool Manager::mDFS(int vertex) // dfs
 {
+	if(vertex>undigraph->getSize()) // 그래프에 있는 노드보다 큰 노드가 들어오면 없으므로 예외처리
+		return true;
+	
 	bool visited[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
 	for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
 		visited[i]=false;
@@ -287,10 +287,12 @@ bool Manager::mDFS(int vertex) // dfs
 	stack<int> s;
 	s.push(vertex); // stack에 push(시작 vertex)
 	
-	if(undigraph->getSize()==1) // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
-		fout<<vertex;
+	if(undigraph->getSize()==1){ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
+		fout<<vertex<<endl;
+		return true;
+	} 
 	else // 처음 노드 출력
-		fout<<vertex<<" -> ";
+		fout<<vertex;
 
 	while(!s.empty()){ // stack이 empty일 때까지 반복
 		int current = s.top(); // 현재 vertex는 stack의 top
@@ -312,13 +314,14 @@ bool Manager::mDFS(int vertex) // dfs
 						k++;
 				}
 
-				if(k==undigraph->getSize()) // 해당 그래프에서 모든 vertex를 방문했으면
+				if(k==undigraph->getSize()){// 해당 그래프에서 모든 vertex를 방문했으면
 					fout<<next; // "->" 없이 출력
-				else // 아직 모든 vertex를 방문하지 않았으면
-					fout<<next<<" -> "; // "->" 있도록 출력
-			
+					return true;
+				}
+					
 				s.push(current); // current를 다시 push하는 이유는 인접한 vertex가 next뿐만 아니라 여러개 있을 수도 있기 때문
 				s.push(next); // 다음 반복시 top이 next가 됨(next의 next를 위해)
+				fout<<" -> "<<next;
 				break;
 			}
 		}
@@ -330,20 +333,25 @@ bool Manager::mDFS(int vertex) // dfs
 
 bool Manager::mDFS_R(int vertex, bool visited[])
 {
+	if(vertex>undigraph->getSize()) // 그래프에 있는 노드보다 큰 노드가 들어오면 없으므로 예외처리
+		return true;
+		
 	visited[vertex]=true; // 방문했으므로 true
 
-	if(undigraph->getSize()==1) // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
-		fout<<vertex;
+	if(undigraph->getSize()==1){ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
+		fout<<vertex<<endl;
+		return true;
+	} 
 	else{
-		int k=0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
-		for(int j=0; j<undigraph->getSize(); j++){ // 해당 그래프에서 방문한 횟수 판단
-			if(visited[j]==true)
-				k++;
-		}
-		if(k==undigraph->getSize()) // 해당 그래프에서 모든 vertex를 방문했으면
-			fout<<vertex; // "->" 없이 출력
-		else // 아직 모든 vertex를 방문하지 않았으면
-			fout<<vertex<<" -> "; // "->" 있도록 출력
+		// int k=0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
+		// for(int j=0; j<undigraph->getSize(); j++){ // 해당 그래프에서 방문한 횟수 판단
+		// 	if(visited[j]==true)
+		// 		k++;
+		// }
+		// if(k==undigraph->getSize()) // 해당 그래프에서 모든 vertex를 방문했으면
+		// 	fout<<vertex; // "->" 없이 출력
+		// else // 아직 모든 vertex를 방문하지 않았으면
+			fout<<vertex; // "->" 있도록 출력
 	}
 		
 
@@ -355,6 +363,7 @@ bool Manager::mDFS_R(int vertex, bool visited[])
 		int next=iter->first; // 다음 vetex(현재 vertex와 인접한 vertex)
 
 		if(!visited[next]){
+			fout<<" -> ";
 			mDFS_R(next, visited);
 		}
 	}
