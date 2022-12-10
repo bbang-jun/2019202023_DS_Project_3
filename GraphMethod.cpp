@@ -148,9 +148,131 @@ bool DFS_R(Graph* graph, bool visit[], int vertex)
 	}
 }
 
+// 특정 원소가 속한 집합을 찾기
+int findParent(int x, int parent[]) {
+    // 루트 노드가 아니라면, 루트 노드를 찾을 때까지 재귀적으로 호출
+    if (x == parent[x])
+		return x;
+	else
+    	return parent[x] = findParent(parent[x], parent);
+}
+
+// 두 원소가 속한 집합을 합치기
+void unionParent(int a, int b, int parent[]) {
+    a = findParent(a, parent);
+    b = findParent(b, parent);
+    if (a < b) parent[b] = a;
+    else parent[a] = b;
+}
+
 bool Kruskal(Graph* graph)
 {
+	ofstream fout;
+    fout.open("log.txt", ios::app);
 
+	int v;
+	int parent[100000];
+	int cost=0;
+	
+	vector<pair<int, pair<int, int>>> edges;
+	
+	int**m_Mat = new int*[graph->getSize()];
+	for(int i=0; i<graph->getSize(); i++)
+	{
+		m_Mat[i] = new int[graph->getSize()];
+		memset(m_Mat[i], 0, sizeof(int)*graph->getSize());
+	}
+
+	v=graph->getSize(); 
+    for (int i = 1; i <= v; i++) {
+        parent[i] = i;
+    }
+
+	for(int i=0; i<v; i++){
+		map<int, int>*m = new map<int, int>;
+		graph->getAdjacentEdges(i, m);
+
+		map<int, int>* temp=m;
+		for(map<int, int>::iterator iter=temp->begin(); iter!=temp->end(); iter++){
+			m_Mat[i][iter->first]=iter->second;
+			m_Mat[iter->first][i]=iter->second;
+			edges.push_back({iter->second, {i, iter->first}});
+		}
+		
+	}
+
+	sort(edges.begin(), edges.end());
+	vector<map<int, int>*> vec; // 벡터
+	vector<map<int, int>*>::iterator vecIter=vec.begin(); // 벡터의 iterator
+	map < int, int >* m_List = new map<int, int>[v]; // m_List 
+	vector<pair<int, pair<int, int>>>::iterator edgeIter=edges.begin(); // 
+
+	int j=0;
+
+	
+		for(edgeIter=edges.begin(); j<v-1; edgeIter++){
+			// second.first: 시작점 second.second: 도착점 edgeIter->first: 비용 
+			m_List[edgeIter->second.first].insert(pair<int, int>(edgeIter->second.second, edgeIter->first)); 
+			m_List[edgeIter->second.second].insert(pair<int, int>(edgeIter->second.first, edgeIter->first)); 
+			j++;
+		}
+
+
+	for (int i = 0; i < edges.size(); i++) {
+        int tempCost = edges[i].first;
+        int a = edges[i].second.first; // 시작
+        int b = edges[i].second.second; // 도착
+		if(i<graph->getSize())
+			
+        // 사이클이 발생하지 않는 경우에만 집합에 포함
+        if (findParent(a, parent) != findParent(b, parent)) {
+            unionParent(a, b, parent);
+		
+            cost += tempCost;
+        }
+    }
+
+	
+	for(int i=0; i<v; i++)
+	{
+		fout<<"["<<i<<"] ";
+
+		for(auto it_=m_List[i].begin(); it_!=m_List[i].end(); it_++)
+		{
+			fout<<it_->first<<"("<<it_->second<<") ";
+		}
+		fout<<endl;
+	}
+
+
+
+	fout<<endl;
+    fout << "cost: "<<cost << endl;
+	
+}
+
+
+// int a[7]={0,5,2,4,6,1,3};
+
+// 	InsertionSort(a, 6);
+
+// 	for(int i=1; i<7; i++)
+// 		cout<<a[i]<<" ";
+
+void InsertionSort(int*a, const int n){
+	for(int j=2; j<=n; j++){
+		int temp = a[j];
+		Insert(temp, a, j-1);
+	}
+}
+
+void Insert(int e, int *a, int i){
+	a[0]=e;
+	while(e<a[i]){
+		a[i+1]=a[i];
+		i--;
+	}
+	a[i+1]=e;
 }
 
 bool Dijkstra(Graph* graph, int vertex)

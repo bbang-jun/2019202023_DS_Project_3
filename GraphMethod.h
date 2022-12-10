@@ -11,5 +11,9 @@ bool Kruskal(Graph* graph);
 bool Dijkstra(Graph* graph, int vertex);
 bool Bellmanford(Graph* graph, int s_vertex, int e_vertex);
 bool FLOYD(Graph* graph);
+void InsertionSort(int a[], int n);
+void Insert(int e, int a[], int i);
+int findParent(int x, int parent[]);
+void unionParent(int a, int b, int parent[]);
 
 #endif
