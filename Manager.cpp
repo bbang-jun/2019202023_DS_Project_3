@@ -89,9 +89,7 @@ void Manager::run(const char* command_txt){
 			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="KRUSKAL"){
-			fout<<"====== Kruskal ======="<<endl;
 			mKRUSKAL();
-			fout<<"====================="<<endl;
 		}
 		else if(commandFromtxt=="DIKSTRA"){
 			//mDIJKSTRA();
@@ -243,7 +241,8 @@ bool Manager::mDIJKSTRA(int vertex)
 
 bool Manager::mKRUSKAL()
 {
-	Kruskal(graph);
+	if(Kruskal(graph)==false)
+		printErrorCode(600);
 }
 
 bool Manager::mBELLMANFORD(int s_vertex, int e_vertex)

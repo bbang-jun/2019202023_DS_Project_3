@@ -11,15 +11,17 @@ ListGraph::~ListGraph()
 	delete[] m_List;
 }
 
-void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m)
+bool ListGraph::getAdjacentEdges(int vertex, map<int, int>* m)
 {
 	map<int, int>* v_map = v[vertex];
+	if(v_map==NULL)
+		return false;
 	map<int, int>::iterator iter;
 	for(iter=v_map->begin(); iter!=v_map->end(); iter++){
 		m->insert(pair<int, int>(iter->first, iter->second));
 	}
 
-	return;
+	return true;
 }
 
 // map<int, int>* (map[from vertex].insert([to vertex], [weight]))

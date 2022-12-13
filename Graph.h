@@ -31,7 +31,7 @@ public:
 	bool getType();
 	int getSize();
 	
-	virtual void getAdjacentEdges(int vertex, map<int, int>* m) = 0;
+	virtual bool getAdjacentEdges(int vertex, map<int, int>* m) = 0;
 	virtual void insertEdge(int from, int to, int weight) = 0;
 	virtual	bool printGraph() = 0;
 };

@@ -19,18 +19,24 @@ MatrixGraph::~MatrixGraph()
 	delete[] m_Mat;
 }
 
-void MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m)
+bool MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m)
 {
 	int i=0;
+	int judgeNum=0;
 
 	while(i<getSize()){
-		if(m_Mat[vertex][i]!=0)
+		if(m_Mat[vertex][i]!=0){
 			m->insert(pair<int, int>(i, m_Mat[vertex][i]));
+			judgeNum++;
+		}
+			
 		
 		i++;
 	}
+	if(judgeNum==0)
+		return false;
 
-	return;
+	return true;
 }
 
 void MatrixGraph::insertEdge(int from, int to, int weight)
