@@ -1,12 +1,16 @@
 #include "GraphMethod.h"
+# define INF 0x3f3f3f3f
+bool firstPrint=true;
+
 
 bool BFS(Graph *graph, int vertex)
 {
+	if(findVertexInGraph(graph, vertex)==false)
+		return false;
+
 	ofstream fout;
 	fout.open("log.txt", ios::app);
-	if (vertex > graph->getSize()) // 그래프에 있는 노드보다 큰 노드가 들어오면 없으므로 예외처리
-		return true;
-
+			
 	bool visited[graph->getSize()];			   // 방문했는지 체크하는 bool형 배열
 	for (int i = 0; i < graph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
 		visited[i] = false;
@@ -14,6 +18,9 @@ bool BFS(Graph *graph, int vertex)
 
 	queue<int> q;
 	q.push(vertex);
+
+	fout<<"======== BFS ========"<<endl;
+	fout<<"startvertex: "<<vertex<<endl;
 
 	if (graph->getSize() == 1)
 	{ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
@@ -51,6 +58,7 @@ bool BFS(Graph *graph, int vertex)
 				if (k == graph->getSize())
 				{ // 해당 그래프에서 모든 vertex를 방문했으면
 					fout << " -> " << next << endl;
+					fout<<"====================="<<endl<<endl;
 					return true;
 				}
 
@@ -58,17 +66,19 @@ bool BFS(Graph *graph, int vertex)
 				fout << " -> " << next;
 			}
 		}
+		delete m;
 	}
 
-	fout << endl;
+	return true;
 }
 
 bool DFS(Graph *graph, int vertex)
 {
+	if(findVertexInGraph(graph, vertex)==false)
+		return false;
+		
 	ofstream fout;
 	fout.open("log.txt", ios::app);
-	if (vertex > graph->getSize()) // 그래프에 있는 노드보다 큰 노드가 들어오면 없으므로 예외처리
-		return true;
 
 	bool visited[graph->getSize()];			   // 방문했는지 체크하는 bool형 배열
 	for (int i = 0; i < graph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
@@ -77,6 +87,9 @@ bool DFS(Graph *graph, int vertex)
 
 	stack<int> s;
 	s.push(vertex); // stack에 push(시작 vertex)
+
+	fout<<"======== DFS ========"<<endl;
+	fout<<"startvertex: "<<vertex<<endl;
 
 	if (graph->getSize() == 1)
 	{ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
@@ -113,6 +126,7 @@ bool DFS(Graph *graph, int vertex)
 				if (k == graph->getSize())
 				{ // 해당 그래프에서 모든 vertex를 방문했으면
 					fout << " -> " << next << endl;
+					fout<<"====================="<<endl<<endl;
 					return true;
 				}
 
@@ -122,18 +136,29 @@ bool DFS(Graph *graph, int vertex)
 				break;
 			}
 		}
+		delete m;
 	}
 
-	fout << endl;
+	return true;
 }
+
+
+
+
 
 bool DFS_R(Graph *graph, bool visit[], int vertex)
 {
+	if(findVertexInGraph(graph, vertex)==false)
+		return false;
+
 	ofstream fout;
 	fout.open("log.txt", ios::app);
 
-	if (vertex > graph->getSize()) // 그래프에 있는 노드보다 큰 노드가 들어오면 없으므로 예외처리
-		return true;
+	if(firstPrint==true){
+		fout<<"======== DFS_R ========"<<endl;
+		fout<<"startvertex: "<<vertex<<endl;
+		firstPrint=false;
+	}
 
 	visit[vertex] = true; // 방문했으므로 true
 
@@ -151,17 +176,42 @@ bool DFS_R(Graph *graph, bool visit[], int vertex)
 	graph->getAdjacentEdges(vertex, m);	  // 해당 vertex에 인접한 vertex들을 map에 담음
 
 	map<int, int> *temp = m;
+	
+	bool check=false;
+	
 	for (map<int, int>::iterator iter = temp->begin(); iter != temp->end(); iter++)
 	{
 		int next = iter->first; // 다음 vetex(현재 vertex와 인접한 vertex)
 
 		if (!visit[next])
 		{
+			check=true;
 			fout << " -> ";
 			fout.close();
 			DFS_R(graph, visit, next);
 		}
 	}
+
+	int k = 0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
+	
+	for (int j = 0; j < graph->getSize(); j++)
+	{ // 해당 그래프에서 방문한 횟수 판단
+		if (visit[j] == true)
+			k++;
+	}
+
+	if (k == graph->getSize())
+	{ // 해당 그래프에서 모든 vertex를 방문했으면
+		fout << endl;
+		fout<<"====================="<<endl<<endl;
+		return true;
+	}
+
+	if(check==false){
+		fout << " -> ";
+	}
+
+	return true;
 }
 
 // 특정 원소가 속한 집합을 찾기
@@ -213,11 +263,12 @@ bool Kruskal(Graph *graph)
 		{
 			edges->push_back({iter->second, {i, iter->first}});
 		}
+		delete m;
 	}
 
 	QuickSort(edges, 0, edges->size()-1);
 
-	map<int, int> *m_List = new map<int, int>[v];						  // m_List
+	map<int, int> *m_List = new map<int, int>[v];
 	vector<pair<int, pair<int, int>>>::iterator edgeIter = edges->begin(); 
 
 	int j = 0;
@@ -268,6 +319,8 @@ bool Kruskal(Graph *graph)
 	}
 	fout << "cost: " << cost << endl;
 	fout<<"====================="<<endl<<endl;
+
+	delete edges;
 
 	return true;
 }
@@ -328,6 +381,104 @@ void InsertionSort(vector<pair<int, pair<int, int>>>* a, int low, int high){
 
 bool Dijkstra(Graph *graph, int vertex)
 {
+	if(findVertexInGraph(graph, vertex)==false)
+		return false;
+		
+	ofstream fout;
+	fout.open("log.txt", ios::app);
+	int v, weight;
+
+	int size = graph->getSize(); // v는 graph의 size
+	list<pair<int, int>>* adj=new list<pair<int, int>>[size]; // 특정 노드에서 인접한 노드 및 weight 저장
+	//list<int>* prev=new list<int>[size]; // 경로 저장용
+	vector<int>*from = new vector<int>(graph->getSize());
+	
+	for(int i=0; i<size; i++){ // adj에 다 담는 과정
+		map<int, int>*m=new map<int, int>;
+		graph->getAdjacentEdges(i, m);
+
+		map<int, int> *temp = m;
+		for(auto iter = temp->begin(); iter!=temp->end(); iter++){
+			if(iter->second<0)
+				return false;
+			adj[i].push_back(make_pair(iter->first, iter->second)); // second가 weight
+		}
+	}
+
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq; // 우선 순위 큐 사용
+
+	vector<int> dist(graph->getSize(), INF); // 특정 노드에서 모든 다른 노드에 대한 거리를 무한대로 초기화
+
+	pq.push(make_pair(0, vertex)); // 처음에 시작 노드를 push함(weight는 0으로)
+	dist[vertex]=0; // 시작 vertex는 어차피 자신에 대한 최후의 최단 경로는 0임
+
+	while(!pq.empty()){ 
+		int u = pq.top().second; // first는 weght(거리), second는 vertex
+		pq.pop();
+
+		list<pair<int, int>>::iterator i;
+		for(i = adj[u].begin(); i != adj[u].end(); ++i){ // u는 특정 노드
+			v = (*i).first; // v는 특정 노드에 인접한 노드
+			weight = (*i).second; // weight는 특정 노드->인접 노드의 weight
+
+			if(dist[v] > dist[u] + weight){ // 기존에 v노드로 가는 거리보다 
+				dist[v] = dist[u] + weight;
+				//prev[v].push_back(u);
+				(*from)[v]=u;
+				pq.push(make_pair(dist[v], v));
+			}
+		}
+	}
+
+	fout<<"========= Dijkstra ========="<<endl;
+	fout<<"startvertex: "<<vertex<<endl;
+	fout.close();
+	// 0부터 각 정점까지의 경로 출력
+    for (int i = 0; i < size; i++) {
+		if(i == vertex)
+       		continue;
+		fout.open("log.txt", ios::app);
+		fout<<"["<<i<<"] ";
+		fout.close();
+	    if(dist[i] == INF){
+			fout.open("log.txt", ios::app);
+            fout<<"x";
+            fout<<endl;
+			fout.close();
+            continue;
+        }
+		printPath(0, i, vertex, from);
+		fout.open("log.txt", ios::app);
+		fout<<i<<" ("<<dist[i]<<")";
+		
+        fout<<endl;
+		fout.close();
+    }
+
+	fout.open("log.txt", ios::app);
+	fout<<"=========================="<<endl<<endl;
+	fout.close();
+
+	return true;
+}
+
+void printPath(int start, int i, int vertex, vector<int>* from) {
+	ofstream fout;
+	fout.open("log.txt", ios::app);
+    // 기저 조건 : 시작점과 목적지가 같은 경우  
+    if ((*from)[i] == start) {
+		if(vertex!=0 && start==0)
+			return;
+        fout << start << " -> ";
+        return;
+    }
+
+    // 재귀호출을 통해 정점 e전의 정점에 대한 경로를 출력한다..  
+    printPath(start, (*from)[i], vertex, from);
+    
+    // 최단경로에서 정점 e 바로 이전의 정점를 화면에 출력한다.  
+    fout << (*from)[i] << " - > ";
+	fout.close();
 }
 
 bool Bellmanford(Graph *graph, int s_vertex, int e_vertex)
@@ -336,4 +487,15 @@ bool Bellmanford(Graph *graph, int s_vertex, int e_vertex)
 
 bool FLOYD(Graph *graph)
 {
+}
+
+
+bool findVertexInGraph(Graph *graph, int vertex){
+	int initialVertex=0;
+	int lastVertex=graph->getSize()-1;
+	if(vertex>=initialVertex && vertex<=lastVertex){
+		return true;
+	}
+	else
+		return false;
 }

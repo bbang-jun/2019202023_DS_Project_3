@@ -13,6 +13,8 @@ ListGraph::~ListGraph()
 
 bool ListGraph::getAdjacentEdges(int vertex, map<int, int>* m)
 {
+	if(vertex==-1)
+		return false;
 	map<int, int>* v_map = v[vertex];
 	if(v_map==NULL)
 		return false;

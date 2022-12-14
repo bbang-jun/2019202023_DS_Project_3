@@ -17,5 +17,6 @@ int partition(vector<pair<int, pair<int, int>>> *a, int low, int high);
 int findParent(int x, int parent[]);
 void unionParent(int a, int b, int parent[]);
 void QuickSort(vector<pair<int, pair<int, int>>>* a, const int low, const int high);
-
+void printPath(int start, int i, int vertex, vector<int>* from);
+bool findVertexInGraph(Graph *graph, int vertex);
 #endif

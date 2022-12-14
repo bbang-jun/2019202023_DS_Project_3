@@ -55,12 +55,8 @@ void Manager::run(const char* command_txt){
 			vertex=strtok(NULL, "\n");
 			if(vertex==NULL)
 				printErrorCode(300);
-				
 			int start=atoi(vertex);
-			fout<<"======== BFS ========"<<endl;
-			fout<<"startvertex: "<<start<<endl;
 			mBFS(start);
-			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="DFS"){
 			char*vertex;
@@ -69,10 +65,7 @@ void Manager::run(const char* command_txt){
 				printErrorCode(400);
 
 			int start=atoi(vertex);
-			fout<<"======== DFS ========"<<endl;
-			fout<<"startvertex: "<<start<<endl;
 			mDFS(start);
-			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="DFS_R"){
 			char*vertex;
@@ -81,18 +74,18 @@ void Manager::run(const char* command_txt){
 				printErrorCode(500);
 
 			int start=atoi(vertex);
-			fout<<"======== DFS_R ========"<<endl;
-			fout<<"startvertex: "<<start<<endl;
-
 			mDFS_R(start);
-			fout<<endl;
-			fout<<"====================="<<endl<<endl;
 		}
 		else if(commandFromtxt=="KRUSKAL"){
 			mKRUSKAL();
 		}
-		else if(commandFromtxt=="DIKSTRA"){
-			//mDIJKSTRA();
+		else if(commandFromtxt=="DIJKSTRA"){
+			char*vertex;
+			vertex=strtok(NULL, "\n");
+			if(vertex==NULL)
+				printErrorCode(700);
+			int start=atoi(vertex);
+			mDIJKSTRA(start);
 		}
 		else if(commandFromtxt=="BELLMANDFORD"){
 			//mBELLMANFORD();
@@ -215,12 +208,14 @@ bool Manager::PRINT()
 
 bool Manager::mBFS(int vertex)
 {
-	BFS(undigraph, vertex);
+	if(BFS(undigraph, vertex)==false)
+		printErrorCode(300);
 }
 
 bool Manager::mDFS(int vertex) // dfs
 {
-	DFS(undigraph, vertex);
+	if(DFS(undigraph, vertex)==false)
+		printErrorCode(400);
 }
 
 
@@ -230,19 +225,21 @@ bool Manager::mDFS_R(int vertex)
 	for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
 		visited[i]=false;
 	
+	if(DFS_R(undigraph, visited, vertex)==false)
+		printErrorCode(500);
 
-	DFS_R(undigraph, visited, vertex);
-
-}
-
-bool Manager::mDIJKSTRA(int vertex)
-{
 }
 
 bool Manager::mKRUSKAL()
 {
 	if(Kruskal(graph)==false)
 		printErrorCode(600);
+}
+
+bool Manager::mDIJKSTRA(int vertex)
+{
+	if(Dijkstra(graph, vertex)==false)
+		printErrorCode(700);
 }
 
 bool Manager::mBELLMANFORD(int s_vertex, int e_vertex)
