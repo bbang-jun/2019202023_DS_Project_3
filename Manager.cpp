@@ -10,9 +10,11 @@ Manager::Manager()
 
 Manager::~Manager()
 {
-	if(load)
+	if(load){
 		delete graph;
 		delete undigraph;
+	}
+
 	fout.close();
 }
 
@@ -42,10 +44,12 @@ void Manager::run(const char* command_txt){
 		if(commandFromtxt=="LOAD"){
 			char* textfile;
 			textfile=strtok(NULL, "\n");
-			if(textfile==NULL)
+			if(textfile==NULL){
 				printErrorCode(100);
+				continue;
+			}
+				
 			LOAD(textfile);
-			printSuccessCode("LOAD");
 		}
 		else if(commandFromtxt=="PRINT"){
 			PRINT();
@@ -53,25 +57,32 @@ void Manager::run(const char* command_txt){
 		else if(commandFromtxt=="BFS"){
 			char*vertex;
 			vertex=strtok(NULL, "\n");
-			if(vertex==NULL)
+			if(vertex==NULL){
 				printErrorCode(300);
+				continue;
+			}
 			int start=atoi(vertex);
 			mBFS(start);
 		}
 		else if(commandFromtxt=="DFS"){
 			char*vertex;
 			vertex=strtok(NULL, "\n");
-			if(vertex==NULL)
+			if(vertex==NULL){
 				printErrorCode(400);
-
+				continue;
+			}
+				
 			int start=atoi(vertex);
 			mDFS(start);
 		}
 		else if(commandFromtxt=="DFS_R"){
 			char*vertex;
 			vertex=strtok(NULL, "\n");
-			if(vertex==NULL)
+			if(vertex==NULL){
 				printErrorCode(500);
+				continue;
+			}
+				
 
 			int start=atoi(vertex);
 			mDFS_R(start);
@@ -82,16 +93,31 @@ void Manager::run(const char* command_txt){
 		else if(commandFromtxt=="DIJKSTRA"){
 			char*vertex;
 			vertex=strtok(NULL, "\n");
-			if(vertex==NULL)
+			if(vertex==NULL){
 				printErrorCode(700);
+				continue;
+			}
+				
 			int start=atoi(vertex);
 			mDIJKSTRA(start);
 		}
-		else if(commandFromtxt=="BELLMANDFORD"){
-			//mBELLMANFORD();
+		else if(commandFromtxt=="BELLMANFORD"){
+			char* charStart, *charEnd;
+			charStart=strtok(NULL, " ");
+			charEnd=strtok(NULL, "\n");
+
+			if(charStart==NULL || charEnd==NULL){
+				printErrorCode(800);
+				continue;
+			}
+			
+			int start=atoi(charStart);
+			int end=atoi(charEnd);
+
+			mBELLMANFORD(start, end);
 		}
 		else if(commandFromtxt=="FLOYD"){
-			//mFLOYD();
+			mFLOYD();
 		}
 		else if(commandFromtxt=="EXIT"){
 			
@@ -108,6 +134,11 @@ void Manager::run(const char* command_txt){
 
 bool Manager::LOAD(char* filename)
 {
+	if(load>=1){
+		delete undigraph;
+		delete graph;
+	}
+
 	string strGraphFormat, strGraphSize, forGetLine;
 	int graphSize=0;
 	char* ptr1, *ptr2, *ptr3;
@@ -197,10 +228,20 @@ bool Manager::LOAD(char* filename)
 			}
 		}
 	}
+	else{
+		printErrorCode(100);
+		return false;
+	}
+	printSuccessCode("LOAD");
+	load++;
 }
 
 bool Manager::PRINT()
 {
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(200);
+		return false;
+	}
 	if(graph->printGraph())
 		return true;
 	return false;
@@ -208,48 +249,103 @@ bool Manager::PRINT()
 
 bool Manager::mBFS(int vertex)
 {
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(300);
+		return false;
+	}
 	if(BFS(undigraph, vertex)==false)
 		printErrorCode(300);
 }
 
 bool Manager::mDFS(int vertex) // dfs
 {
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(400);
+		return false;
+	}
 	if(DFS(undigraph, vertex)==false)
 		printErrorCode(400);
 }
 
 
 bool Manager::mDFS_R(int vertex)
-{			
+{
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(500);
+		return false;
+	}	
 	bool visited[undigraph->getSize()]; // 방문했는지 체크하는 bool형 배열
 	for(int i=0; i<undigraph->getSize(); i++) // 방문하지 않았으면 false이므로 초기화
 		visited[i]=false;
 	
-	if(DFS_R(undigraph, visited, vertex)==false)
-		printErrorCode(500);
+	int path[undigraph->getSize()]; // 경로를 담아가지고 오는 용도
+	for(int i=0; i<undigraph->getSize(); i++)
+		path[i]=-1;
 
+	if(DFS_R(undigraph, visited, path, vertex)==false){
+		printErrorCode(500);
+		return false;
+	}
+
+	for(int i=0; i<undigraph->getSize(); i++){
+		if(path[++i]==-1){
+			--i;
+			fout<<path[i]<<endl;
+			break;
+		}
+			
+		i--;
+		if(i==undigraph->getSize()-1){
+			fout<<path[i];
+			break;
+		}
+		fout<<path[i]<<" -> ";
+	}
+
+	fout<<endl;
+	fout<<"====================="<<endl<<endl;	
+
+	return true;
 }
 
 bool Manager::mKRUSKAL()
 {
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(600);
+		return false;
+	}
 	if(Kruskal(graph)==false)
 		printErrorCode(600);
 }
 
 bool Manager::mDIJKSTRA(int vertex)
 {
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(700);
+		return false;
+	}
 	if(Dijkstra(graph, vertex)==false)
 		printErrorCode(700);
 }
 
 bool Manager::mBELLMANFORD(int s_vertex, int e_vertex)
 {
-
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(800);
+		return false;
+	}
+	if(Bellmanford(graph, s_vertex, e_vertex)==false)
+		printErrorCode(800);
 }
 
 bool Manager::mFLOYD()
 {
-
+	if(graph==NULL||undigraph==NULL){
+		printErrorCode(900);
+		return false;
+	}
+	if(FLOYD(graph)==false)
+		printErrorCode(900);
 }
 
 void Manager::printSuccessCode(string command) {// SUCCESS CODE PRINT 

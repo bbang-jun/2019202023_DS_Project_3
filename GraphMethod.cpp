@@ -1,6 +1,7 @@
 #include "GraphMethod.h"
 # define INF 0x3f3f3f3f
 bool firstPrint=true;
+int order=0;
 
 
 bool BFS(Graph *graph, int vertex)
@@ -68,6 +69,8 @@ bool BFS(Graph *graph, int vertex)
 		}
 		delete m;
 	}
+	fout<<endl;
+	fout<<"====================="<<endl<<endl;
 
 	return true;
 }
@@ -138,6 +141,8 @@ bool DFS(Graph *graph, int vertex)
 		}
 		delete m;
 	}
+	fout<<endl;
+	fout<<"====================="<<endl<<endl;
 
 	return true;
 }
@@ -146,7 +151,7 @@ bool DFS(Graph *graph, int vertex)
 
 
 
-bool DFS_R(Graph *graph, bool visit[], int vertex)
+bool DFS_R(Graph *graph, bool visit[], int path[], int vertex)
 {
 	if(findVertexInGraph(graph, vertex)==false)
 		return false;
@@ -162,53 +167,23 @@ bool DFS_R(Graph *graph, bool visit[], int vertex)
 
 	visit[vertex] = true; // 방문했으므로 true
 
-	if (graph->getSize() == 1)
-	{ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
-		fout << vertex << endl;
-		return true;
-	}
-	else
-	{
-		fout << vertex;
-	}
+	path[order]=vertex;
+	order++;
 
 	map<int, int> *m = new map<int, int>; // map 동적 할당
 	graph->getAdjacentEdges(vertex, m);	  // 해당 vertex에 인접한 vertex들을 map에 담음
 
 	map<int, int> *temp = m;
-	
-	bool check=false;
-	
+
 	for (map<int, int>::iterator iter = temp->begin(); iter != temp->end(); iter++)
 	{
 		int next = iter->first; // 다음 vetex(현재 vertex와 인접한 vertex)
 
 		if (!visit[next])
 		{
-			check=true;
-			fout << " -> ";
 			fout.close();
-			DFS_R(graph, visit, next);
+			DFS_R(graph, visit, path, next);
 		}
-	}
-
-	int k = 0; // 마지막 방문이면 "->"가 출력되지 않아야 하므로 이를 판단하기 위한 변수
-	
-	for (int j = 0; j < graph->getSize(); j++)
-	{ // 해당 그래프에서 방문한 횟수 판단
-		if (visit[j] == true)
-			k++;
-	}
-
-	if (k == graph->getSize())
-	{ // 해당 그래프에서 모든 vertex를 방문했으면
-		fout << endl;
-		fout<<"====================="<<endl<<endl;
-		return true;
-	}
-
-	if(check==false){
-		fout << " -> ";
 	}
 
 	return true;
@@ -391,7 +366,7 @@ bool Dijkstra(Graph *graph, int vertex)
 	int size = graph->getSize(); // v는 graph의 size
 	list<pair<int, int>>* adj=new list<pair<int, int>>[size]; // 특정 노드에서 인접한 노드 및 weight 저장
 	//list<int>* prev=new list<int>[size]; // 경로 저장용
-	vector<int>*from = new vector<int>(graph->getSize());
+	vector<int>*shortestPath = new vector<int>(graph->getSize()); // 경로 저장용
 	
 	for(int i=0; i<size; i++){ // adj에 다 담는 과정
 		map<int, int>*m=new map<int, int>;
@@ -424,7 +399,7 @@ bool Dijkstra(Graph *graph, int vertex)
 			if(dist[v] > dist[u] + weight){ // 기존에 v노드로 가는 거리보다 
 				dist[v] = dist[u] + weight;
 				//prev[v].push_back(u);
-				(*from)[v]=u;
+				(*shortestPath)[v]=u;
 				pq.push(make_pair(dist[v], v));
 			}
 		}
@@ -447,7 +422,7 @@ bool Dijkstra(Graph *graph, int vertex)
 			fout.close();
             continue;
         }
-		printPath(0, i, vertex, from);
+		printPath(0, i, vertex, shortestPath);
 		fout.open("log.txt", ios::app);
 		fout<<i<<" ("<<dist[i]<<")";
 		
@@ -477,16 +452,169 @@ void printPath(int start, int i, int vertex, vector<int>* from) {
     printPath(start, (*from)[i], vertex, from);
     
     // 최단경로에서 정점 e 바로 이전의 정점를 화면에 출력한다.  
-    fout << (*from)[i] << " - > ";
+    fout << (*from)[i] << " -> ";
 	fout.close();
 }
 
 bool Bellmanford(Graph *graph, int s_vertex, int e_vertex)
 {
+   if(findVertexInGraph(graph, s_vertex)==false || findVertexInGraph(graph, e_vertex)==false)
+      return false;
+
+   ofstream fout;
+   fout.open("log.txt", ios::app);
+   int size=graph->getSize();
+
+   list<pair<int, int>>* adj=new list<pair<int, int>>[size]; // 특정 노드에서 인접한 노드 및 weight 저장
+
+   	for(int i=0; i<size; i++){ // adj에 다 담는 과정
+		map<int, int>*m=new map<int, int>;
+		graph->getAdjacentEdges(i, m);
+
+		map<int, int> *temp = m;
+		for(auto iter = temp->begin(); iter!=temp->end(); iter++){
+			if(s_vertex!=iter->first)
+				adj[i].push_back(make_pair(iter->first, iter->second)); // second가 weight
+		}
+	}
+
+   vector<int>*shortestPath = new vector<int>(size); // 경로 저장용
+   vector<int> dist(graph->getSize(), INF);
+
+   dist[s_vertex]=0;
+
+   for(int n=0; n<size-1; n++){
+	for(int i=0; i<size; i++){
+		for(auto iter=adj[i].begin(); iter!=adj[i].end(); iter++){
+			int v=iter->first;
+			int weight=iter->second;
+
+			if(dist[i]!=INF && dist[v]>dist[i]+weight){
+				(*shortestPath)[v]=i;
+				dist[v]=dist[i]+weight;
+			}
+		}
+	}
+   }
+
+   for(int i=0; i<size; i++){
+	for(auto iter=adj[i].begin(); iter!=adj[i].end(); iter++){
+			int v=iter->first;
+			int weight=iter->second;
+
+			if(dist[i]!=INF && dist[v]>dist[i]+weight)
+				fout<<"음의 사이클"<<endl;
+	}
+   }
+
+	fout<<"====== Bellman-Ford ======"<<endl;
+
+	if(dist[e_vertex]==INF)
+		fout<<"x"<<endl;
+	else{
+		printPath(0, e_vertex, s_vertex, shortestPath);
+
+		fout<<e_vertex<<endl;
+		fout<<"cost: "<<dist[e_vertex]<<endl;
+	}
+	
+	fout<<"=========================="<<endl<<endl;
+
+	fout.close();
+
+    return true;
+}
+
+void find_path(int s, int e, int dist[], int prev[]) {
+    ofstream fout;
+    fout.open("log.txt", ios::app);
+    if (s == e) {
+        return;
+    }
+    find_path(s, prev[e], dist, prev);
+    cout << " -> " << e;
+    fout << " -> " << e;
+    return;
 }
 
 bool FLOYD(Graph *graph)
 {
+	ofstream fout;
+	fout.open("log.txt", ios::app);
+
+	int size=graph->getSize(); // get graph's size
+	int** length = new int*[size]; //선언하고자 하는 이차원 배열의 행의 수 만큼 동적 할당
+    for(int i = 0; i < size; i++){ //각각의 인덱스에 선언하고자 하는 배열의 크기만큼을 가르키게 함.
+       length[i] = new int[size];
+    }
+
+	for(int i=0; i<size; i++){
+		for(int j=0; j<size; j++){
+			length[i][j]=INF;
+		}
+	}
+	for(int i=0; i<size; i++){
+        map<int, int> *m=new map<int, int>;
+        graph->getAdjacentEdges(i, m);
+        for(auto it = m->begin(); it!=m->end(); it++){
+            	length[i][it->first] = it->second;
+        }
+    }
+
+	for(int i=0; i<size; i++)
+		length[i][i]=0;
+
+
+	int** dist = new int*[size]; //선언하고자 하는 이차원 배열의 행의 수 만큼 동적 할당
+    for(int i = 0; i < size; i++){ //각각의 인덱스에 선언하고자 하는 배열의 크기만큼을 가르키게 함.
+       dist[i] = new int[size];
+    }
+
+	for(int i=0; i<size; i++){
+		for(int j=0; j<size; j++){
+			dist[i][j]=length[i][j];
+		}
+	}
+
+	for (int p = 0; p < size; p++) {
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				if (dist[i][p] + dist[p][j] < dist[i][j]) {
+					dist[i][j] = dist[i][p] + dist[p][j];
+				}
+			}
+		}
+	}
+	
+	for(int i=0; i<size; i++){
+		if(dist[i][i]<0)
+			return false;
+	}
+
+	fout<<"======== FLOYD ========"<<endl;
+	fout<<'\t';
+	for(int i=0; i<size; i++)
+	{
+		fout<<"["<<i<<"]"<<'\t';
+	}
+	fout<<endl;
+
+	for(int i=0; i<size; i++)
+	{
+		fout<<"["<<i<<"]";
+		for(int j=0; j<size && fout<<'\t'; j++)
+		{
+			if(dist[i][j]==INF)
+				fout<<"x";
+			else
+				fout<<dist[i][j];
+		}
+		fout<<endl;
+	}
+	fout<<"====================="<<endl<<endl;
+
+	return true;
+
 }
 
 

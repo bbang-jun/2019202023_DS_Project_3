@@ -13,6 +13,7 @@
         "initializer_list": "cpp",
         "utility": "cpp",
         "map": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "new": "cpp"
     }
 }
