@@ -20,21 +20,21 @@ using namespace std;
 #define MAX 999999
 
 class Graph{
-protected:
-	bool m_Type;//0:List 1:Matrix // 그래프 형식(List일 경우 0, Matrix일 경우 1)
-	int m_Size; // 그래프 크기
-	ofstream fout;
+protected: // for inheritance
+	bool m_Type;// 0:List 1:Matrix
+	int m_Size; // size of graph
+	ofstream fout; // for log.out
 
 public:
-	Graph(bool type, int size);
-	~Graph();
+	Graph(bool type, int size); // constructor
+	~Graph(); // destructor
 
 	bool getType();
 	int getSize();
 	
-	virtual bool getAdjacentEdges(int vertex, map<int, int>* m) = 0;
-	virtual void insertEdge(int from, int to, int weight) = 0;
-	virtual	bool printGraph() = 0;
+	virtual bool getAdjacentEdges(int vertex, map<int, int>* m) = 0; // get adjacentedges map
+	virtual void insertEdge(int from, int to, int weight) = 0; // insert edge
+	virtual	bool printGraph() = 0; // print graph
 };
 
 #endif

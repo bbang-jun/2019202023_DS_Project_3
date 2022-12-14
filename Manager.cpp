@@ -120,7 +120,7 @@ void Manager::run(const char* command_txt){
 			mFLOYD();
 		}
 		else if(commandFromtxt=="EXIT"){
-			
+			return;
 		}
 	}
 	// char buf[129]={0};
