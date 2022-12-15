@@ -94,8 +94,8 @@ bool DFS(Graph *graph, int vertex) // DFS function
 	fout<<"======== DFS ========"<<endl;
 	fout<<"startvertex: "<<vertex<<endl;
 
-	if (graph->getSize() == 1) // 
-	{ // graph에 노드가 하나만 있으면 "->" 없이 출력(처음 노드 출력)
+	if (graph->getSize() == 1) // if graph has only one vertex
+	{ 
 		fout << vertex << endl;
 		return true;
 	}
@@ -550,6 +550,8 @@ bool FLOYD(Graph *graph) // FLOYD algorithm
 		for (int i = 0; i < size; i++) { // i
 			for (int j = 0; j < size; j++) { // j
 				if (dist[i][k] + dist[k][j] < dist[i][j]) { // save short cost
+					if(dist[i][k]==INF || dist[k][j]==INF)
+						continue;
 					dist[i][j] = dist[i][k] + dist[k][j];
 				}
 			}
