@@ -3,19 +3,19 @@
 
 #include "Graph.h"
 
-class ListGraph : public Graph{
+class ListGraph : public Graph{ // header file for ListGraph
 private:
 	// map<int, int>* (map[from vertex].insert([to vertex], [weight]))
-	map < int, int >* m_List; // 그래프 데이터
-	vector<map<int, int>*> v;
+	map < int, int >* m_List; // data of graph
+	vector<map<int, int>*> v; // vector
 	
 public:	
-	ListGraph(bool type, int size);
-	~ListGraph();
-	int temp=-1;
-	bool getAdjacentEdges(int vertex, map<int, int>* m); // 인자로 입력된 vertex에 인접한 edge들을 map에 저장하는 함수
-	void insertEdge(int from, int to, int weight); // map을 만드는 함수?
-	bool printGraph();
+	ListGraph(bool type, int size); // contructor
+	~ListGraph(); // decturctor
+	int temp=-1; // judge for continuous
+	bool getAdjacentEdges(int vertex, map<int, int>* m); // get adjacent edges number and weight to map
+	void insertEdge(int from, int to, int weight); // make m_list
+	bool printGraph(); // print graph
 };
 
 #endif

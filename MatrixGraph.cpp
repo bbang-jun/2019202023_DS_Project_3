@@ -1,36 +1,35 @@
 #include "MatrixGraph.h"
 
-MatrixGraph::MatrixGraph(bool type, int size) : Graph(type, size)
+MatrixGraph::MatrixGraph(bool type, int size) : Graph(type, size) // constructor
 {
-	m_Mat = new int*[size];
+	m_Mat = new int*[size]; // make dimension-2
 	for(int i=0; i<size; i++)
 	{
 		m_Mat[i] = new int[size];
-		memset(m_Mat[i], 0, sizeof(int)*size);
+		memset(m_Mat[i], 0, sizeof(int)*size); // iniitialize
 	}
 }
 
-MatrixGraph::~MatrixGraph()
+MatrixGraph::~MatrixGraph() // destructor
 {
-	for(int i=0; i<getSize(); i++)
+	for(int i=0; i<getSize(); i++) // deallocation
 	{
 		delete[] m_Mat[i];
 	}
 	delete[] m_Mat;
 }
 
-bool MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m)
+bool MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m) // get adjacent edges for certain vertex
 {
 	int i=0;
 	int judgeNum=0;
 
-	while(i<getSize()){
+	while(i<getSize()){ // insert adjacent edges information to map
 		if(m_Mat[vertex][i]!=0){
-			m->insert(pair<int, int>(i, m_Mat[vertex][i]));
+			m->insert(pair<int, int>(i, m_Mat[vertex][i])); // insert
 			judgeNum++;
 		}
 			
-		
 		i++;
 	}
 	if(judgeNum==0)
@@ -39,15 +38,15 @@ bool MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m)
 	return true;
 }
 
-void MatrixGraph::insertEdge(int from, int to, int weight)
+void MatrixGraph::insertEdge(int from, int to, int weight) // insert edge
 {
-	m_Mat[from][to]=weight;
+	m_Mat[from][to]=weight; // save weight
 }
 
-bool MatrixGraph::printGraph()
+bool MatrixGraph::printGraph() // print graph
 {
-	fout.open("log.txt", ios::app);
-	if( m_Size < 0 )
+	fout.open("log.txt", ios::app); // print to log.txt
+	if( m_Size < 0 ) // if graph size is minus
 		return 0;
 
 	fout<<"========PRINT========"<<endl;
@@ -55,37 +54,19 @@ bool MatrixGraph::printGraph()
 	fout<<'\t';
 	for(int i=0; i<m_Size; i++)
 	{
-		fout<<"["<<i<<"]"<<'\t';
+		fout<<"["<<i<<"]"<<'\t'; // print 
 	}
 	fout<<endl;
 
 	for(int i=0; i<m_Size; i++)
 	{
-		fout<<"["<<i<<"]";
+		fout<<"["<<i<<"]"; // print
 		for(int j=0; j<m_Size && fout<<'\t'; j++)
 		{
-			fout<<m_Mat[i][j];
+			fout<<m_Mat[i][j]; // print
 		}
 		fout<<endl;
 	}
 	fout<<"====================="<<endl<<endl;
 	return 1;
 }
-
-// bool MatrixGraph::printvGraph(){
-// 	fout.open("log.txt", ios::app);
-// 	fout<<"Graph is ListGraph!"<<endl;
-
-// 	for(int i=0; i<m_Size; i++)
-// 	{
-// 		fout<<"["<<i<<"]";
-
-// 		for(auto it_=m_List[i].begin(); it_!=m_List[i].end() && fout<<" -> "; it_++)
-// 		{
-// 			fout<<"("<<it_->first<<","<<it_->second<<")";
-// 		}
-// 		fout<<endl;
-// 	}
-// 	fout<<endl;
-// 	return 1;
-// }

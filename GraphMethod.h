@@ -3,20 +3,18 @@
 
 #include "ListGraph.h"
 #include "MatrixGraph.h"
-// 그래프 연산을 수행하는 일반 함수들을 모아둔 헤더 파일
-bool BFS(Graph* graph, int vertex); 
-bool DFS(Graph* graph, int vertex);
-bool DFS_R(Graph* graph, bool visit[], int path[], int vertex); // DFS 재귀연산
-bool Kruskal(Graph* graph);
-bool Dijkstra(Graph* graph, int vertex);
-bool Bellmanford(Graph* graph, int s_vertex, int e_vertex);
-bool FLOYD(Graph* graph);
-// void InsertionSort(int a[], int low, int high);
-void InsertionSort(vector<pair<int, pair<int, int>>>* a, int low, int high);
-int partition(vector<pair<int, pair<int, int>>> *a, int low, int high);
-int findOperation(int x, int parent[]);
-void unionOperation(int a, int b, int parent[]);
-void QuickSort(vector<pair<int, pair<int, int>>>* arr, const int low, const int high);
-void printPath(int start, int i, int vertex, vector<int>* from);
-bool findVertexInGraph(Graph *graph, int vertex);
+bool BFS(Graph* graph, int vertex); // BFS 
+bool DFS(Graph* graph, int vertex); // dfs
+bool DFS_R(Graph* graph, bool visit[], int path[], int vertex); // recursive dfs
+bool Kruskal(Graph* graph); // kruskal algorithm 
+bool Dijkstra(Graph* graph, int vertex); // dikstra algorithm
+bool Bellmanford(Graph* graph, int s_vertex, int e_vertex); // bellmanford algorithm
+bool FLOYD(Graph* graph); // floyd algorithm
+void InsertionSort(vector<pair<int, pair<int, int>>>* arr, int low, int high); // insertion sort
+int partition(vector<pair<int, pair<int, int>>> *arr, int low, int high); // partition
+int findOperation(int x, int parent[]); // disjoint set(find)
+void unionOperation(int a, int b, int parent[]); // disjoint set (union)
+void QuickSort(vector<pair<int, pair<int, int>>>* arr, const int low, const int high); // quick sort
+void printPath(int start, int i, int vertex, vector<int>* from); // path previous path
+bool findVertexInGraph(Graph *graph, int vertex); // find vertex in graph
 #endif

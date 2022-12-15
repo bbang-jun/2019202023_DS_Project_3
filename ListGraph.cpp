@@ -1,68 +1,68 @@
 #include "ListGraph.h"
 
-ListGraph::ListGraph(bool type, int size) : Graph(type, size)
+ListGraph::ListGraph(bool type, int size) : Graph(type, size) // constructor
 {
-	m_Type = type;
-	m_List = new map<int, int>[size];
+	m_Type = type; // set type
+	m_List = new map<int, int>[size]; // set size
 }
 
-ListGraph::~ListGraph()
+ListGraph::~ListGraph() // destructor
 {
-	delete[] m_List;
+	delete[] m_List; // delete
 }
 
-bool ListGraph::getAdjacentEdges(int vertex, map<int, int>* m)
+bool ListGraph::getAdjacentEdges(int vertex, map<int, int>* m) // get adjacent edges
 {
-	if(vertex==-1)
-		return false;
-	map<int, int>* v_map = v[vertex];
-	if(v_map==NULL)
-		return false;
-	map<int, int>::iterator iter;
-	for(iter=v_map->begin(); iter!=v_map->end(); iter++){
-		m->insert(pair<int, int>(iter->first, iter->second));
+	if(vertex==-1) // exception handlidng
+		return false; // return false
+	map<int, int>* v_map = v[vertex]; // declare v_map
+	if(v_map==NULL) // if v_map is null
+		return false; // return false
+	map<int, int>::iterator iter; // set iterator
+	for(iter=v_map->begin(); iter!=v_map->end(); iter++){ // loop iterator
+		m->insert(pair<int, int>(iter->first, iter->second)); // insert edge
 	}
 
-	return true;
+	return true; // return true
 }
 
 // map<int, int>* (map[from vertex].insert([to vertex], [weight]))
-void ListGraph::insertEdge(int from, int to, int weight)
+void ListGraph::insertEdge(int from, int to, int weight) // insert edge
 {
-	vector<map<int, int>*>::iterator it=v.begin();
+	vector<map<int, int>*>::iterator it=v.begin(); // set iterator
 
-	if(to==0 && weight==0){
-		it=v.insert(it+from, 0);
+	if(to==0 && weight==0){ // to vertex is 0, weight is 0
+		it=v.insert(it+from, 0); // insert
 	}
 	else{
-		if(temp!=from){
-			m_List[from].insert(pair<int, int>(to, weight));
-			it=v.insert(it+from, m_List+from);
-			temp=from;
+		if(temp!=from){ // judge it is continuous 
+			m_List[from].insert(pair<int, int>(to, weight)); // insert to m_list
+			it=v.insert(it+from, m_List+from); // inser to vector
+			temp=from; 
 		}
 		else
-			m_List[from].insert(pair<int, int>(to, weight));
+			m_List[from].insert(pair<int, int>(to, weight)); // insert
 	}
 
 	return;
 }
 
-bool ListGraph::printGraph()
+bool ListGraph::printGraph() // print graph information
 {
-	fout.open("log.txt", ios::app);
+	fout.open("log.txt", ios::app); // print for log.txt
 	fout<<"========PRINT========"<<endl;
 
-	for(int i=0; i<m_Size; i++)
+	for(int i=0; i<m_Size; i++) // loop
 	{
-		fout<<"["<<i<<"]";
+		fout<<"["<<i<<"]"; // print
 
 		for(auto it_=m_List[i].begin(); it_!=m_List[i].end() && fout<<" -> "; it_++)
 		{
-			fout<<"("<<it_->first<<","<<it_->second<<")";
+			fout<<"("<<it_->first<<","<<it_->second<<")"; // print
 		}
 		fout<<endl;
 	}
-	//fout<<endl;
+
 	fout<<"====================="<<endl<<endl;
 	return 1;
 }

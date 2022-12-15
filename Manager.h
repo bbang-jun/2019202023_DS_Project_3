@@ -4,31 +4,31 @@
 #include "GraphMethod.h"
 
 class Manager{
-private:
+private: // private
 	Graph* graph;
 	ofstream fout;
 	int load;
 	Graph* undigraph;
 
-public:
-	Manager();
-	~Manager();
+public: // public
+	Manager(); // constructor
+	~Manager(); // destructor
 
-	void run(const char * command_txt);
+	void run(const char * command_txt); // run fuction
 	
-	bool LOAD(char* filename);
-	bool PRINT();
+	bool LOAD(char* filename); // LOAD function
+	bool PRINT(); // PRINT function
 	
-	bool mBFS(int vertex);
-	bool mDFS(int vertex);
-	bool mDFS_R(int vertex);
-	bool mKRUSKAL();
-	bool mDIJKSTRA(int vertex);
-	bool mBELLMANFORD(int s_vertex, int e_vertex);
-	bool mFLOYD();
+	bool mBFS(int vertex); // mBFS function
+	bool mDFS(int vertex); // mDFS function
+	bool mDFS_R(int vertex); // mDFS_R function
+	bool mKRUSKAL(); // mKRUSKAL function
+	bool mDIJKSTRA(int vertex); // mDIJKSTRA function
+	bool mBELLMANFORD(int s_vertex, int e_vertex); // mBELLMANDFOR function
+	bool mFLOYD(); // mFLOYD function
 
-	void printSuccessCode(string command);
-	void printErrorCode(int n);	
+	void printSuccessCode(string command); // print success code
+	void printErrorCode(int n);	// print error c ode
 };
 
 #endif
