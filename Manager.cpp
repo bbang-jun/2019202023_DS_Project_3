@@ -39,7 +39,8 @@ void Manager::run(const char* command_txt){ // for function logic
 		
 		strcpy(ptr, commandFromtxt.c_str()); // copy
 		command = strtok(ptr, " "); // save to char*
-		commandFromtxt=command; // save to string
+		if(command==NULL) continue;
+ 		commandFromtxt=command; // save to string
 
 		if(commandFromtxt=="LOAD"){ // if command is LOAD
 			char* textfile;
@@ -147,7 +148,7 @@ bool Manager::LOAD(char* filename) // LOAD function
 			printErrorCode(100); // print error code 100
 			return false;
 		}
-		else{
+		else{	
 			getline(graphLtxt, strGraphFormat, '\n'); 
 			getline(graphLtxt, strGraphSize, '\n');
 			graphSize=stoi(strGraphSize); // string to int
@@ -161,6 +162,7 @@ bool Manager::LOAD(char* filename) // LOAD function
 				to=0;
 				weight=0;
 				ptr1=strtok(temp, " "); // ptr1 is to vertex
+				if(ptr1==NULL) continue;
 				ptr2=strtok(NULL, "\n"); // ptr2 is weight
 
 				if(ptr2==NULL){ // if second argumnet is NULL
@@ -200,6 +202,7 @@ bool Manager::LOAD(char* filename) // LOAD function
 				char temp[200];
 				strcpy(temp, forGetLine.c_str());
 				ptr=strtok(temp, " ");
+				if(ptr==NULL) continue;
 				weight=atoi(ptr); // wegith (char to int)
 				graph->insertEdge(i, 0, weight); // insert edge
 				if(weight!=0){ // if weight is not 0
